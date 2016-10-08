@@ -29,19 +29,21 @@ module FrontPlate_2d(is_square) {
 		InterlockingPlate(width,height,0,0,0,1,0.25);
 		union() {
 			translate([width*.28,height/1.6]) SonarEye_2d();
-			translate([width*.72,height/1.6]) SonarEye_2d();
+			translate([width*.72,height/1.6]) SonarEye_2d(true);
 		} translate([width/2,height*.45]) square([.32,.32],center=true);
 	}
 }
 
-module SonarEye_2d() {
+module SonarEye_2d(second) {
     eye_size = 2.2;
-    vertical = false;
+    dual_supports = false;
+    support_angle = 20;
     union() {
         difference() {
             circle(eye_size/2, $fn=res);
             circle(eye_size/2.3, $fn=res);
-            square(vertical?[eye_size/8,eye_size]:[eye_size,eye_size/8],center=true);
+            rotate((second?-1:1)*support_angle) square([eye_size,eye_size/8],center=true);
+            if (dual_supports) rotate(90+(second?-1:1)*support_angle) square([eye_size,eye_size/8],center=true);
         } PingSensor_2d();
     }
 }
