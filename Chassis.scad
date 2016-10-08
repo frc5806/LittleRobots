@@ -25,43 +25,46 @@ module InterlockingPlate(width, height, botT, topT, leftT, rightT, bottomOffset=
 }
 
 module FrontPlate_2d(is_square) {
-	eye_size = 1.26;
 	difference() {
 		InterlockingPlate(width,height,0,0,0,1,0.25);
 		union() {
-			if(is_square) {
-				translate([width*.3-eye_size/2,height/2]) square([eye_size, eye_size]);
-				translate([width*.7-eye_size/2,height/2]) square([eye_size, eye_size]);
-			} else {
-				translate([width*.3,height/2+eye_size/2]) circle(eye_size/2, $fn=res);
-				translate([width*.7,height/2+eye_size/2]) circle(eye_size/2, $fn=res);
-			}
-			translate([width/2,height*.45]) square([.32,.32],center=true);
-		}
+			translate([width*.28,height/1.6]) SonarEye_2d();
+			translate([width*.72,height/1.6]) SonarEye_2d();
+		} translate([width/2,height*.45]) square([.32,.32],center=true);
 	}
+}
+
+module SonarEye_2d() {
+    eye_size = 2.2;
+    vertical = false;
+    union() {
+        difference() {
+            circle(eye_size/2, $fn=res);
+            circle(eye_size/2.3, $fn=res);
+            square(vertical?[eye_size/8,eye_size]:[eye_size,eye_size/8],center=true);
+        } PingSensor_2d();
+    }
 }
 
 module LeftPlate_2d() {
-	difference() {
-		InterlockingPlate(length,height,0,0,0,1,0.25);
-		translate([length/2,height/2]) circle(.093, $fn=res);
-	}
+	InterlockingPlate(length,height,0,0,0,1,0.25);
 }
 
 module RightPlate_2d() {
-	difference() {
-		InterlockingPlate(length,height,0,1,1,0,0.25);
-		translate([length/2,height/2]) circle(.093, $fn=res);
-	}
+	InterlockingPlate(length,height,0,1,1,0,0.25);
 }
 
 module BackPlate_2d() {
 	difference() {
 		InterlockingPlate(width,height,0,1,0,1,0.25);
-		union() {
-			translate([width/2-.495, height*.8]) circle(.32, $fn=res);
-			translate([width/2+.495, height*.8]) circle(.32, $fn=res);
-		}
+        translate([width/2,height*.8]) PingSensor_2d();
+	}
+}
+
+module PingSensor_2d() {
+    union() {
+		translate([-0.495, 0]) circle(.315, $fn=res);
+		translate([0.495, 0]) circle(.315, $fn=res);
 	}
 }
 
