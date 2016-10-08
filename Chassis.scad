@@ -83,13 +83,11 @@ module PingSensor_2d() {
 
 module MotorMount_2d() {
 	motor_mount_length = 2.52;
-	motor_mount_rad = 0.075;
     motor_mount_width = 0.5;
     
 	translate([motor_mount_width/2,-motor_mount_length/2]) union() {
-		circle(motor_mount_rad, $fn=res);
-        translate([0,motor_mount_length]) circle(motor_mount_rad, $fn=res);
-		
+		circle(screw_diameter/2, $fn=res);
+        translate([0,motor_mount_length]) circle(screw_diameter/2, $fn=res);
 	}
 }
 
@@ -97,16 +95,16 @@ module BottomPlate_2d() {
 	wall_dist = 1.75;
     axle_length = 0.7;
     wheel_width = 0.75;
-    wheel_diameter = 4;
+
 	union() {
 		difference() {
 			InterlockingPlate(width,length,1,0,1,1);
 			union() {
-				translate([wall_dist,length/3,0]) MotorMount_2d();
-				translate([width-wall_dist,length/3]) rotate(180) MotorMount_2d();
+				translate([wall_dist,length*wheel_location,0]) MotorMount_2d();
+				translate([width-wall_dist,length*wheel_location]) rotate(180) MotorMount_2d();
                 
-				translate([wall_dist-axle_length,length/3]) square([wheel_width,wheel_diameter], center=true);
-				translate([width-wall_dist+axle_length,length/3]) square([wheel_width,wheel_diameter], center=true);
+				translate([wall_dist-axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
+				translate([width-wall_dist+axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
 			}
 		}
 	}
