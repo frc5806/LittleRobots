@@ -11,7 +11,7 @@ height = 5;
 
 wheel_diameter = 3;
 screw_diameter = 0.125;
-wheel_stack = 1;
+wheel_stack = 2;
 wheel_location = 1/3.8;
 
 module InterlockingPlate(width, height, botT, topT, leftT, rightT, bottomOffset=0) {
@@ -185,13 +185,22 @@ module BallCaster_3d(show_ball) {
     if (show_ball) translate([0, 0, baseHeight]) sphere(ball_diameter/2, $fn=50);
 }
 
-module LaserCutterLayout_2d() {
-	FrontPlate_2d(true);
-	translate([width+0.1,0]) LeftPlate_2d();
-	translate([width+length+0.2,0]) BackPlate_2d();
-	translate([0,height+0.1]) TopPlate_2d();
-	translate([width+0.1,height+0.1]) RightPlate_2d();
-	translate([width+length+0.2,height+0.1]) BottomPlate_2d();
+module LaserCutterLayoutOne_2d() {
+	translate([0.2,0.2]) FrontPlate_2d(true);
+    translate([0.2,height+0.4]) BackPlate_2d();
+    
+	translate([width+0.4,0.2]) LeftPlate_2d();
+	translate([width+0.4,height+0.4]) RightPlate_2d();
+    
+    translate([width+length+0.6+wheel_diameter/2,0.2+wheel_diameter/2]) Wheel_2d();
+    translate([24-wheel_diameter/2-0.2,wheel_diameter+1]) Wheel_2d();
+    if (wheel_stack > 1) translate([width+length+0.6+wheel_diameter/2,0.2+wheel_diameter/2+4.6]) Wheel_2d();
+    if (wheel_stack > 1) translate([24-wheel_diameter/2-0.2,wheel_diameter+5.6]) Wheel_2d();
+}
+
+module LaserCutterLayoutTwo_2d() {
+	translate([0.2,0.2]) TopPlate_2d();
+	translate([width+0.4,0.2]) BottomPlate_2d();
 }
 
 module CheckLayout_3d() {
@@ -218,5 +227,6 @@ module CheckLayout_3d() {
     translate([width/2,length-1,0.25]) rotate([0,180,90]) scale(1/25.4) BallCaster_3d(true);
 }
 
-CheckLayout_3d();
-//LaserCutterLayout_2d();
+//CheckLayout_3d();
+LaserCutterLayoutOne_2d();
+//LaserCutterLayoutTwo_2d();
