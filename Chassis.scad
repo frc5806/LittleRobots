@@ -98,14 +98,17 @@ module BottomPlate_2d() {
 
 	union() {
 		difference() {
-			InterlockingPlate(width,length,1,0,1,1);
-			union() {
-				translate([wall_dist,length*wheel_location,0]) MotorMount_2d();
-				translate([width-wall_dist,length*wheel_location]) rotate(180) MotorMount_2d();
-                
-				translate([wall_dist-axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
-				translate([width-wall_dist+axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
-			}
+        InterlockingPlate(width,length,1,0,1,1);
+            translate([wall_dist,length*wheel_location,0]) MotorMount_2d();
+            translate([width-wall_dist,length*wheel_location]) rotate(180) MotorMount_2d();
+            
+            translate([wall_dist-axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
+            translate([width-wall_dist+axle_length,length*wheel_location]) square([wheel_width,wheel_diameter], center=true);
+            
+            translate([width/2,length-1,0.25]) union() {
+                translate([-0.5,0,0]) circle(screw_diameter/2, $fn=res);
+                translate([0.5,0,0]) circle(screw_diameter/2, $fn=res);
+            }
 		}
 	}
 }
