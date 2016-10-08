@@ -49,11 +49,17 @@ module SonarEye_2d(second) {
 }
 
 module LeftPlate_2d() {
-	InterlockingPlate(length,height,0,0,0,1,0.25);
+	difference() {
+        InterlockingPlate(length,height,0,0,0,1,0.25);
+        translate([length/2,height*.8]) PingSensor_2d();
+    }
 }
 
 module RightPlate_2d() {
-	InterlockingPlate(length,height,0,1,1,0,0.25);
+    difference() {
+        InterlockingPlate(length,height,0,1,1,0,0.25);
+        translate([length/2,height*.8]) PingSensor_2d();
+    }
 }
 
 module BackPlate_2d() {
