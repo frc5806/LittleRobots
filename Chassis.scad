@@ -1,15 +1,13 @@
 res = 100;
 
-isThick = true; //Whether using 3mm or 6mm ply.
-
 thickness = 0.25;
 
 kerf = 0.00;
 kerf_2 = kerf / 2;
 
-width = 7;
-length = 6;
-height = 4;
+width = 8;
+length = 8;
+height = 5;
 
 module InterlockingPlate(width, height, botT, topT, leftT, rightT, bottomOffset=0) {
 	numBT = width*2;
@@ -93,36 +91,11 @@ module BottomPlate_2d() {
 				translate([width/2+0.5,length*4/5]) circle(0.125, $fn=res);
 			}
 		}
-		//translate([width-thickness,0]) square([thickness,thickness]);
-		//translate([0,length-thickness]) square([thickness,thickness]);
 	}
-}
-
-module ServoMount_2d() {
-	square([0.475,0.895], center=true);
-	translate([0,0.895/2+0.1]) circle(.036, $fn=res);
-	translate([0,-0.895/2-0.1]) circle(.036, $fn=res);
-	translate([0,0.895/2+0.3]) square([.32,.125], center=true);
 }
 
 module TopPlate_2d() {
-	union() {
-		difference() {
-			InterlockingPlate(width,length,1,1,0,1);
-			union() {
-				translate([width-.75,length-.75]) circle(0.39,$fn=res);
-				translate([width/7,length*.18]) ServoMount_2d();
-				translate([6*width/7,length*.18]) ServoMount_2d();
-				translate([width/2,length*.8]) circle(.036, $fn=res);
-				translate([width/2,length*.9]) circle(.093, $fn=res);
-				translate([width/2,length*.1]) circle(.093, $fn=res);
-				translate([0.75,length-.75]) circle(.125, $fn=res);
-				translate([0.75,length-1.25]) circle(.125, $fn=res);
-			}
-		}
-		square([thickness,thickness]);
-		translate([width-thickness,0]) square([thickness,thickness]);
-	}
+	InterlockingPlate(width,length,1,1,0,1);
 }
 
 module Wheel_2d() {
@@ -154,12 +127,12 @@ module CheckLayout_3d() {
 	color([0,0,1]) translate([width-thickness,0,0]) rotate([90,0,90]) linear_extrude(height=thickness) LeftPlate_2d();
 	color([1,1,0]) translate([width,length-thickness,0]) rotate([90,0,180]) linear_extrude(height=thickness) BackPlate_2d();
 	color([1,0,1]) translate([0,0,0]) rotate([90,0,90]) linear_extrude(height=thickness) RightPlate_2d();
-	color([0,1,1]) translate([0,0,4-thickness]) linear_extrude(height=thickness) TopPlate_2d(); 
+	color([0,1,1]) translate([0,0,height-thickness]) linear_extrude(height=thickness) TopPlate_2d(); 
 	color([1,1,1]) {
 			translate([.55,length/3,0.56+.25+thickness]) rotate([90,0,90]) linear_extrude(height=thickness) Wheel_2d();
 			translate([width-thickness-.55,length/3,0.56+.25+thickness]) rotate([90,0,90]) linear_extrude(height=thickness) Wheel_2d();
 	}
 }
 
-//CheckLayout_3d();
-LaserCutterLayout_2d();
+CheckLayout_3d();
+//LaserCutterLayout_2d();
