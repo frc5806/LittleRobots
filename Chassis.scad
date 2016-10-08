@@ -9,6 +9,11 @@ width = 10;
 length = 8;
 height = 5;
 
+wheel_diameter = 3;
+screw_diameter = 0.125;
+wheel_stack = 1;
+wheel_location = 1/3.8;
+
 module InterlockingPlate(width, height, botT, topT, leftT, rightT, bottomOffset=0) {
 	numBT = width*2;
 	numLR = height*2;
@@ -112,16 +117,24 @@ module TopPlate_2d() {
 }
 
 module Wheel_2d() {
-	diam = 2.625;
-	screw_diam = 0.08;
+    bolt_circle = 0.63;
+    shaft_diameter = 0.25;
+    
+    bump_angle = 5;
+    bump_scale = 0.0125;
+    
 	difference() {
-		circle(diam/2, $fn=res);
-		union() {
-			translate([0.25,0,0]) circle(screw_diam/2, $fn=res);
-			translate([-0.25,0,0]) circle(screw_diam/2, $fn=res);
-			translate([0,0.25,0]) circle(screw_diam/2, $fn=res);
-			translate([0,-0.25,0]) circle(screw_diam/2, $fn=res);
-		}
+		circle(wheel_diameter/2, $fn=res);
+        
+        for (i=[0:bump_angle:360-bump_angle]) {
+            translate([wheel_diameter*cos(i)/2,wheel_diameter*sin(i)/2]) circle(bump_scale*wheel_diameter, $fn=res);
+        }
+        
+        translate([bolt_circle/2,0]) circle(screw_diameter/2,$fn=res);
+        translate([-bolt_circle/2,0]) circle(screw_diameter/2,$fn=res);
+        translate([0,bolt_circle/2]) circle(screw_diameter/2,$fn=res);
+        translate([0,-bolt_circle/2]) circle(screw_diameter/2,$fn=res);
+        circle(shaft_diameter/2,$fn=res);
 	}
 }
 
