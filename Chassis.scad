@@ -214,6 +214,8 @@ module CheckLayout_3d() {
         
 			translate([width-thickness-0.8,length*wheel_location,axle_height+.25+thickness]) rotate([90,0,90]) linear_extrude(height=thickness*wheel_stack,center=true) Wheel_2d();
 	}
+    
+    translate([width/2,length-1,0.25]) rotate([0,180,90]) scale(1/25.4) BallCaster_3d(true);
 }
 
 CheckLayout_3d();
