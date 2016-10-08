@@ -5,7 +5,7 @@ thickness = 0.25;
 kerf = 0.00;
 kerf_2 = kerf / 2;
 
-width = 8;
+width = 10;
 length = 8;
 height = 5;
 
@@ -77,36 +77,38 @@ module PingSensor_2d() {
 }
 
 module MotorMount_2d() {
-	motor_mount_length = 1.25;
-	motor_mount_width = 0.85;
-	motor_mount_rad = 0.065;
-	translate([-motor_mount_length/2,-motor_mount_width/2,0]) union() {
+	motor_mount_length = 2.52;
+	motor_mount_rad = 0.075;
+    motor_mount_width = 0.5;
+    
+	translate([motor_mount_width/2,-motor_mount_length/2]) union() {
 		circle(motor_mount_rad, $fn=res);
-		translate([motor_mount_length,0,0]) circle(motor_mount_rad, $fn=res);
-		translate([0,motor_mount_width,0]) circle(motor_mount_rad, $fn=res);
-		translate([motor_mount_length,motor_mount_width,0]) circle(motor_mount_rad, $fn=res);
+        translate([0,motor_mount_length]) circle(motor_mount_rad, $fn=res);
+		
 	}
 }
 
 module BottomPlate_2d() {
-	wall_dist = 2.1;
+	wall_dist = 1.75;
+    axle_length = 0.7;
+    wheel_width = 0.75;
+    wheel_diameter = 4;
 	union() {
 		difference() {
 			InterlockingPlate(width,length,1,0,1,1);
 			union() {
 				translate([wall_dist,length/3,0]) MotorMount_2d();
-				translate([width-wall_dist,length/3]) MotorMount_2d();
-				translate([wall_dist-1.725,length/12]) square([0.6,length/2]);
-				translate([width-wall_dist+1.125,length/12]) square([0.6,length/2]);
-				translate([width/2,length*4/5]) circle(0.25, $fn=res);
-				translate([width/2+0.5,length*4/5]) circle(0.125, $fn=res);
+				translate([width-wall_dist,length/3]) rotate(180) MotorMount_2d();
+                
+				translate([wall_dist-axle_length,length/3]) square([wheel_width,wheel_diameter], center=true);
+				translate([width-wall_dist+axle_length,length/3]) square([wheel_width,wheel_diameter], center=true);
 			}
 		}
 	}
 }
 
 module TopPlate_2d() {
-	InterlockingPlate(width,length,1,1,0,1);
+    InterlockingPlate(width,length,1,1,0,1);
 }
 
 module Wheel_2d() {
