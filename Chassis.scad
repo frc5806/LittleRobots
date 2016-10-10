@@ -1,3 +1,5 @@
+include <puzzle.scad>
+
 res = 100;
 
 thickness = 0.25;
@@ -13,20 +15,6 @@ wheel_diameter = 3;
 screw_diameter = 0.125;
 wheel_stack = 2;
 wheel_location = 1/3.8;
-
-module InterlockingPlate(width, height, botT, topT, leftT, rightT, bottomOffset=0) {
-	numBT = width*2;
-	numLR = height*2;
-	difference() {
-		square([width,height]);
-
-		if(bottomOffset == 0) for(i=[width*botT/numBT:width*2/numBT:width-.01]) translate([i,-0.01,0]) square([width/numBT-kerf,thickness-kerf_2+.01]);
-		else for(i=[width*botT/numBT:width*2/numBT:width-.01]) translate([i,bottomOffset+kerf_2,0]) square([width/numBT-kerf,thickness-kerf+.01]);
-		for(i=[width*topT/numBT:width*2/numBT:width-.01]) translate([i,height-thickness+kerf_2,0]) square([width/numBT-kerf,thickness+.01]);
-		for(i=[height*leftT/numLR:height*2/numLR:height-.01]) translate([-0.01,i,0]) square([thickness+.01-kerf_2,height/numLR-kerf]);
-		for(i=[height*rightT/numLR:height*2/numLR:height-.01]) translate([width-thickness+kerf_2,i,0]) square([thickness+.01,height/numLR-kerf]);
-	}
-}
 
 module FrontPlate_2d(is_square) {
 	difference() {
@@ -133,95 +121,3 @@ module Wheel_2d() {
         circle(shaft_diameter/2,$fn=res);
 	}
 }
-
-// uses 3/8" ball bearing
-module BallCaster_3d(show_ball) {
-    m_screw_diameter = screw_diameter * 25.4;
-
-    deck_height = 13;
-    ball_diameter = 10;
-    ball_tolerance = 0.4;
-    wall_thickness = 2.5;
-
-    gap_width = ball_diameter / 3;
-    base_thickness = 4;
-    pedistal_width = ball_diameter + wall_thickness * 2;
-
-    baseWidth = 25.4;
-    baseHeight = deck_height-ball_diameter/2;
-
-
-    rotate([0, 0, 90]) difference() {
-        union() {
-            translate([-baseWidth/2, -wall_thickness - m_screw_diameter / 2, 0]) cube([baseWidth, wall_thickness * 2 + m_screw_diameter, base_thickness]);
-
-            translate([baseWidth / 2, 0, 0]) cylinder(base_thickness, m_screw_diameter / 2 + wall_thickness, m_screw_diameter / 2 + wall_thickness, $fn=res);
-            translate([-baseWidth / 2, 0, 0]) cylinder(base_thickness, m_screw_diameter / 2 + wall_thickness, m_screw_diameter / 2 + wall_thickness, $fn=res);
-
-            translate([0, 0, 0]) cylinder(baseHeight-2, pedistal_width/2, pedistal_width/2, $fn=res);
-
-            difference(){
-                translate([0, 0, baseHeight-2]) sphere(pedistal_width/2,$fn=res);
-                translate([0, 0, baseHeight+ball_diameter/2 - ball_diameter/5]) cylinder(25, 25, 25, $fn=res);
-                translate([0, 0, -12]) cylinder(12, 25, 25, $fn=res);
-            };
-        }
-
-        translate([0,0,baseHeight+ball_tolerance]) sphere(ball_diameter/2+ball_tolerance,$fn=res);
-        translate([-gap_width/2,-baseWidth/2,base_thickness]) cube([gap_width,baseWidth,ball_diameter]);
-        translate([-25, ball_diameter/2+0.5,0]) cube([50,ball_diameter, 50]);
-        translate([-25, -ball_diameter-0.5,0]) cube([50,ball_diameter/2, 50]);
-
-        translate([baseWidth/2,0,0]) cylinder(base_thickness+2,m_screw_diameter/2,m_screw_diameter/2,$fn=res);
-        translate([-baseWidth/2,0,0]) cylinder(base_thickness+2,m_screw_diameter/2,m_screw_diameter/2,$fn=res);
-
-    }
-
-    if (show_ball) translate([0, 0, baseHeight]) sphere(ball_diameter/2, $fn=50);
-}
-
-module LaserCutterLayoutOne_2d() {
-	translate([0.2,0.2]) FrontPlate_2d(true);
-    translate([0.2,height+0.4]) BackPlate_2d();
-
-	translate([width+0.4,0.2]) LeftPlate_2d();
-	translate([width+0.4,height+0.4]) RightPlate_2d();
-
-    translate([width+length+0.6+wheel_diameter/2,0.2+wheel_diameter/2]) Wheel_2d();
-    translate([24-wheel_diameter/2-0.2,wheel_diameter+1]) Wheel_2d();
-    if (wheel_stack > 1) translate([width+length+0.6+wheel_diameter/2,0.2+wheel_diameter/2+4.6]) Wheel_2d();
-    if (wheel_stack > 1) translate([24-wheel_diameter/2-0.2,wheel_diameter+5.6]) Wheel_2d();
-}
-
-module LaserCutterLayoutTwo_2d() {
-	translate([0.2,0.2]) TopPlate_2d();
-	translate([width+0.4,0.2]) BottomPlate_2d();
-}
-
-module CheckLayout_3d() {
-    axle_height = 0.16 + 0.47;
-
-	color([1,0,0]) translate([0,0,0.25]) linear_extrude(height=thickness) BottomPlate_2d();
-
-	color([0,1,0]) translate([0,thickness,0]) rotate([90,0,0]) linear_extrude(height=thickness) FrontPlate_2d(true);
-
-	color([0,0,1]) translate([width-thickness,0,0]) rotate([90,0,90]) linear_extrude(height=thickness) LeftPlate_2d();
-
-	color([1,1,0]) translate([width,length-thickness,0]) rotate([90,0,180]) linear_extrude(height=thickness) BackPlate_2d();
-
-	color([1,0,1]) translate([0,0,0]) rotate([90,0,90]) linear_extrude(height=thickness) RightPlate_2d();
-
-	color([0,1,1]) translate([0,0,height-thickness]) linear_extrude(height=thickness) TopPlate_2d();
-
-	color([1,1,1]) {
-			translate([thickness+0.8,length*wheel_location,axle_height+.25+thickness]) rotate([90,0,90]) linear_extrude(height=thickness*wheel_stack,center=true) Wheel_2d();
-
-			translate([width-thickness-0.8,length*wheel_location,axle_height+.25+thickness]) rotate([90,0,90]) linear_extrude(height=thickness*wheel_stack,center=true) Wheel_2d();
-	}
-
-    translate([width/2,length-1,0.25]) rotate([0,180,90]) scale(1/25.4) BallCaster_3d(true);
-}
-
-//CheckLayout_3d();
-LaserCutterLayoutOne_2d();
-//LaserCutterLayoutTwo_2d();
